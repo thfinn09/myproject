@@ -10,9 +10,11 @@ exports.getAll = async (req, res) => {
 
 // GET NOTE BY ID
 exports.getById = async (req, res) => {
+  const { id } = req.params;
+
   const result = await db.query(
     'SELECT * FROM notes WHERE id = $1',
-    [req.params.id]
+    [id]
   );
 
   if (result.rows.length === 0)
@@ -21,26 +23,39 @@ exports.getById = async (req, res) => {
   res.json(result.rows[0]);
 };
 
-// CREATE NOTE
+// CREATE NOTE (ID DO USER NHẬP)
 exports.create = async (req, res) => {
-  const { title, content } = req.body;
+  const { id, title, content } = req.body;
 
-  if (!title)
-    return res.status(400).json({ message: 'Title is required' });
+  if (!id || !title) {
+    return res.status(400).json({
+      message: 'ID and Title are required'
+    });
+  }
 
-  const result = await db.query(
-    `INSERT INTO notes (title, content)
-     VALUES ($1, $2)
-     RETURNING *`,
-    [title, content]
-  );
+  try {
+    const result = await db.query(
+      `INSERT INTO notes (id, title, content)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [id, title, content]
+    );
 
-  res.status(201).json(result.rows[0]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(400).json({
+        message: 'ID already exists'
+      });
+    }
+    res.status(500).json(err);
+  }
 };
 
 // UPDATE NOTE
 exports.update = async (req, res) => {
   const { title, content } = req.body;
+  const { id } = req.params;
 
   const result = await db.query(
     `UPDATE notes
@@ -49,7 +64,7 @@ exports.update = async (req, res) => {
          updated_at = CURRENT_TIMESTAMP
      WHERE id = $3
      RETURNING *`,
-    [title, content, req.params.id]
+    [title, content, id]
   );
 
   if (result.rows.length === 0)
@@ -60,9 +75,11 @@ exports.update = async (req, res) => {
 
 // DELETE NOTE
 exports.remove = async (req, res) => {
+  const { id } = req.params;
+
   const result = await db.query(
     'DELETE FROM notes WHERE id = $1 RETURNING *',
-    [req.params.id]
+    [id]
   );
 
   if (result.rows.length === 0)
