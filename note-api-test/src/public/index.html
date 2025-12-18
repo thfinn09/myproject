@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Note App Basic</title>
+</head>
+<body>
+
+  <h2>NOTE APP (BASIC)</h2>
+
+  <!-- FORM -->
+  <div>
+    <input id="noteId" placeholder="ID (để trống khi tạo mới)" />
+    <br><br>
+
+    <input id="title" placeholder="Title" />
+    <br><br>
+
+    <textarea id="content" placeholder="Content"></textarea>
+    <br><br>
+
+    <button onclick="createNote()">Create</button>
+    <button onclick="updateNote()">Update</button>
+    <button onclick="deleteNote()">Delete</button>
+    <button onclick="loadNotes()">Reload</button>
+  </div>
+
+  <hr>
+
+  <!-- LIST -->
+  <h3>Danh sách ghi chú</h3>
+  <ul id="notes"></ul>
+
+  <script>
+    const API = "http://localhost:3000/api/notes";
+
+    // LOAD ALL
+    async function loadNotes() {
+      const res = await fetch(API);
+      const data = await res.json();
+
+      const ul = document.getElementById("notes");
+      ul.innerHTML = "";
+
+      data.forEach(note => {
+        const li = document.createElement("li");
+        li.innerText = `ID: ${note.id} | ${note.title}`;
+        li.onclick = () => fillForm(note);
+        ul.appendChild(li);
+      });
+    }
+
+    // FILL FORM
+    function fillForm(note) {
+      document.getElementById("noteId").value = note.id;
+      document.getElementById("title").value = note.title;
+      document.getElementById("content").value = note.content || "";
+    }
+
+    // CREATE
+    async function createNote() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content })
+      });
+
+      clearForm();
+      loadNotes();
+    }
+
+    // UPDATE
+    async function updateNote() {
+      const id = document.getElementById("noteId").value;
+      if (!id) return alert("Cần ID để update");
+
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      await fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content })
+      });
+
+      clearForm();
+      loadNotes();
+    }
+
+    // DELETE
+    async function deleteNote() {
+      const id = document.getElementById("noteId").value;
+      if (!id) return alert("Cần ID để xóa");
+
+      await fetch(`${API}/${id}`, {
+        method: "DELETE"
+      });
+
+      clearForm();
+      loadNotes();
+    }
+
+    function clearForm() {
+      document.getElementById("noteId").value = "";
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+    }
+
+    // LOAD KHI MỞ TRANG
+    loadNotes();
+  </script>
+
+</body>
+</html>
