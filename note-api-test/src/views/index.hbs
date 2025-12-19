@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="/css/notes.css">
+
+<h2>NOTE APP</h2>
+
+<div class="container">
+
+  {{#if error}}
+  <div class="error-box">
+    {{error}}
+  </div>
+{{/if}}
+
+  <form method="POST" action="/create">
+    <input name="id" placeholder="ID" required>
+    <input name="title" placeholder="Tiêu đề" required>
+    <textarea name="content" placeholder="Nội dung"></textarea>
+    <button class="btn-add">Thêm ghi chú</button>
+  </form>
+
+</div>
+
+<div class="container">
+
+  {{#each notes}}
+    <div class="note">
+
+      <div class="note-id">ID: {{id}}</div>
+      <b>{{title}}</b>
+      <p>{{content}}</p>
+
+      <div class="actions">
+
+        <form method="GET" action="/edit/{{id}}">
+          <button class="btn-edit">Sửa</button>
+        </form>
+
+        <form method="POST" action="/delete/{{id}}">
+          <button class="btn-delete">Xóa</button>
+        </form>
+
+      </div>
+
+    </div>
+  {{/each}}
+
+</div>

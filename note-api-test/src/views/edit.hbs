@@ -1,0 +1,20 @@
+<link rel="stylesheet" href="/css/edit.css">
+
+<h2>EDIT NOTE</h2>
+
+<div class="container">
+
+  <form method="POST" action="/edit/{{note.id}}">
+    <div class="note-id">ID: {{note.id}}</div>
+
+    <input name="title" value="{{note.title}}" required>
+    <textarea name="content">{{note.content}}</textarea>
+
+    <button class="btn-save">Lưu</button>
+  </form>
+
+  <form method="GET" action="/">
+    <button class="btn-back">Quay lại</button>
+  </form>
+
+</div>

@@ -16,3 +16,8 @@ theo em hiểu về app này là html gửi resquest về và express nhận sau
 việc xử lí sẽ tùy thuộc tín hiệu api từ html truyền về (upload, create, delete,..)
 controller gọi "db.query('làm j đó')" postgresql trả dữ liệu
 controller trả dữ liệu json về frontend.
+
+### hoàn thiện app ghi chú
+các chức năng gồm thêm sửa xóa
+dữ liệu toàn bộ đều được lưu ở postgres
+sử dụng hbs + css (chat gpt)
